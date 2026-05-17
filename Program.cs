@@ -47,21 +47,6 @@ class Program
     static void HandleActivate(JsonElement root)
     {
         string id = root.TryGetProperty("id", out var idProp) ? idProp.GetString() ?? "" : "";
-        int anchorRow = 0, anchorCol = 0;
-
-        if (root.TryGetProperty("anchor", out var anchor))
-        {
-            string a = anchor.GetString() ?? "";
-            int ci = 0;
-            while (ci < a.Length && char.IsLetter(a[ci])) ci++;
-            if (ci > 0 && ci < a.Length)
-            {
-                string colPart = a[..ci].ToUpperInvariant();
-                anchorCol = 0;
-                foreach (char ch in colPart) anchorCol = anchorCol * 26 + (ch - 'A');
-                if (int.TryParse(a[ci..], out int rowNum)) anchorRow = rowNum - 1;
-            }
-        }
 
         // Read params: first param is the input string, optional second is mode (encode/decode)
         string input = "";
@@ -86,7 +71,7 @@ class Program
 
         if (string.IsNullOrEmpty(input))
         {
-            cells.Add(new { r = anchorRow, c = anchorCol + 1, v = "⚠ Usage: urlenc: <text>[,encode|decode|component|path]" });
+            cells.Add(new { r = 0, c = 0, v = "⚠ Usage: urlenc: <text>[,encode|decode|component|path]" });
         }
         else if (mode == "auto")
         {
@@ -96,43 +81,43 @@ class Program
             if (hasPercent)
             {
                 string decoded = Uri.UnescapeDataString(input);
-                cells.Add(new { r = anchorRow + row, c = anchorCol + 1, v = $"Decoded: {decoded}" });
+                cells.Add(new { r = row, c = 0, v = $"Decoded: {decoded}" });
                 row++;
-                cells.Add(new { r = anchorRow + row, c = anchorCol + 1, v = $"Re-encoded: {Uri.EscapeDataString(decoded)}" });
+                cells.Add(new { r = row, c = 0, v = $"Re-encoded: {Uri.EscapeDataString(decoded)}" });
             }
             else
             {
                 string component = Uri.EscapeDataString(input);
-                cells.Add(new { r = anchorRow + row, c = anchorCol + 1, v = $"Component: {component}" });
+                cells.Add(new { r = row, c = 0, v = $"Component: {component}" });
                 row++;
                 // Also show full URI encoding (preserves :/?#[]@!$&'()*+,;=)
                 string full = EscapeFullUri(input);
-                cells.Add(new { r = anchorRow + row, c = anchorCol + 1, v = $"Full URI: {full}" });
+                cells.Add(new { r = row, c = 0, v = $"Full URI: {full}" });
                 row++;
                 string decoded = Uri.UnescapeDataString(input);
                 if (decoded != input)
                 {
-                    cells.Add(new { r = anchorRow + row, c = anchorCol + 1, v = $"Decoded: {decoded}" });
+                    cells.Add(new { r = row, c = 0, v = $"Decoded: {decoded}" });
                 }
             }
         }
         else if (mode == "encode")
         {
-            cells.Add(new { r = anchorRow, c = anchorCol + 1, v = Uri.EscapeDataString(input) });
+            cells.Add(new { r = 0, c = 0, v = Uri.EscapeDataString(input) });
         }
         else if (mode == "decode")
         {
-            cells.Add(new { r = anchorRow, c = anchorCol + 1, v = Uri.UnescapeDataString(input) });
+            cells.Add(new { r = 0, c = 0, v = Uri.UnescapeDataString(input) });
         }
         else if (mode == "component")
         {
-            cells.Add(new { r = anchorRow, c = anchorCol + 1, v = Uri.EscapeDataString(input) });
+            cells.Add(new { r = 0, c = 0, v = Uri.EscapeDataString(input) });
         }
         else if (mode == "path")
         {
             // Encode for path segment — same as component but preserve /
             string encoded = Uri.EscapeDataString(input).Replace("%2F", "/");
-            cells.Add(new { r = anchorRow, c = anchorCol + 1, v = encoded });
+            cells.Add(new { r = 0, c = 0, v = encoded });
         }
 
         var resp = new { type = "write", id, cells };
