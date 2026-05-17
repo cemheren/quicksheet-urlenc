@@ -1,0 +1,7 @@
+{
+  "name": "urlenc",
+  "description": "URL encode/decode — percent-encoding for query strings, paths, and full URIs",
+  "prefix": "urlenc",
+  "entry": "dotnet run --project .",
+  "version": "1.0.0"
+}
