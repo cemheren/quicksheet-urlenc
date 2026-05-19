@@ -29,7 +29,7 @@ Type the `urlenc:` prefix followed by text in any QuickSheet cell. Results appea
 ## Install
 
 ```
-ext: github:cemheren/quicksheet-urlenc
+ext: github:Deskworks/quicksheet-urlenc
 ```
 
 ## Features
